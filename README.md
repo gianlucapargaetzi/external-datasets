@@ -21,7 +21,20 @@ records the revision, the adapter and this repository's commit.
 | `adapters/<adapter>.py` | one `Adapter` class per file, turning the source's files into the standard shape |
 | `tests/` | one test per adapter on a tiny sample of the source |
 
-## Adding a dataset
+## Datasets of our own
+
+A dataset of our own is not added by hand. From its repository, `clearml-dataset register` asks the server, which checks
+the repository's footprint and opens a pull request here with the entry:
+
+```yaml
+source: repo
+link: https://github.com/<owner>/<name>
+```
+
+The entry holds nothing else, because how the data is read is written in the dataset repository itself (`dataset.yaml`).
+Registration happens once. The owner must be in `allowed-owners.txt`.
+
+## Adding a dataset from outside
 
 1. Add `datasets/<name>.yaml`.
 2. Write `adapters/<adapter>.py`. Declare the modalities and labels, then call `writer.add(...)` for each sample.

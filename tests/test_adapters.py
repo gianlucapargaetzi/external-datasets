@@ -6,6 +6,8 @@ A new adapter without a sample fails here, so it cannot be merged. Run from the 
 
 from pathlib import Path
 
+import re
+
 import pytest
 
 from clearml.datasets import SampleWriter
@@ -13,19 +15,35 @@ from clearml.datasets.external import Pin, load_adapter, read_pin
 
 ROOT = Path(__file__).resolve().parent.parent
 PINS = sorted(p.stem for p in (ROOT / "datasets").glob("*.yaml"))
+OWNERS = {
+    line.strip().lower() for line in (ROOT / "allowed-owners.txt").read_text().splitlines()
+    if line.strip() and not line.startswith("#")
+}
 
 
 def adapters_of(pin: Pin):
-    return [pin.adapter] + [o["adapter"] for o in pin.overrides]
+    return [a for a in [pin.adapter] + [o["adapter"] for o in pin.overrides] if a]
 
 
 @pytest.mark.parametrize("name", PINS)
 def test_the_pin_file_is_valid(name):
     pin = read_pin(ROOT, name)
-    assert pin.source in ("huggingface", "git", "local"), f"{name}: unknown source {pin.source!r}"
+    assert pin.source in ("huggingface", "git", "local", "repo"), f"{name}: unknown source {pin.source!r}"
     for override in pin.overrides:
         assert override.get("revisions"), f"{name}: an override has no revisions"
         assert override.get("adapter"), f"{name}: an override has no adapter"
+
+
+@pytest.mark.parametrize("name", PINS)
+def test_a_dataset_of_our_own_is_a_pointer_to_a_repository_of_an_allowed_owner(name):
+    """How a dataset of our own is read is written in its repository, so its entry holds nothing but the link."""
+    pin = read_pin(ROOT, name)
+    if pin.source != "repo":
+        pytest.skip("not a dataset of our own")
+    match = re.fullmatch(r"https://github\.com/([\w.-]+)/([\w.-]+?)(?:\.git)?", pin.link)
+    assert match, f"{name}: link must be https://github.com/<owner>/<name>, not {pin.link!r}"
+    assert match.group(1).lower() in OWNERS, f"{name}: {match.group(1)} is not in allowed-owners.txt"
+    assert not pin.adapter and not pin.overrides, f"{name}: an entry of our own names no adapter; dataset.yaml does"
 
 
 @pytest.mark.parametrize("name", PINS)
