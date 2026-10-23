@@ -2,7 +2,7 @@
 
 import json
 
-from clearml.datasets import Adapter
+from cairnml.datasets import Adapter
 
 
 class ExampleJsonBoxes(Adapter):

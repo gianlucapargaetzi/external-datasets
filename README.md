@@ -4,7 +4,7 @@ Where outside datasets (Hugging Face, git repositories, plain folders) are linke
 one standard shape. A training script asks for a dataset by name, and optionally a commit of **this** repository:
 
 ```python
-from clearml.datasets import Dataset
+from cairnml.datasets import Dataset
 data = Dataset.get_external("example")                       # latest main
 data = Dataset.get_external("example", "<commit>")           # a fixed commit
 ```
@@ -23,7 +23,7 @@ records the revision, the adapter and this repository's commit.
 
 ## Datasets of our own
 
-A dataset of our own is not added by hand. From its repository, `clearml-dataset register` asks the server, which checks
+A dataset of our own is not added by hand. From its repository, `cairnml-dataset register` asks the server, which checks
 the repository's footprint and opens a pull request here with the entry:
 
 ```yaml
@@ -48,8 +48,7 @@ Registration happens once. The owner must be in `allowed-owners.txt`.
 
 `main` is what runs get when they name no commit, so only pull requests that pass `.github/workflows/test.yml`
 may reach it. Set this once in GitHub: Settings, Branches, a rule for `main` that requires a pull request and
-the status check `adapters`. The workflow needs a repository secret `CLEARML_SDK_TOKEN` (a read-only token for
-the `clearml` fork).
+the status check `adapters`. The workflow installs the public `cairnml` SDK from its main branch; it needs no secret.
 
 The tests run on the samples in `tests/data/`, not on the real sources, so they prove that the adapter reads
 its layout, not that a new upstream revision still has it. When a source changes, a run fails with a message that

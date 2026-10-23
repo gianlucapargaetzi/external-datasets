@@ -12,12 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # The SDK is a private fork. CLEARML_SDK_TOKEN is a read-only token for it, stored as a repository secret.
+      # The SDK is a public repository, so no token is needed.
       - uses: actions/checkout@v4
         with:
-          repository: gianlucapargaetzi/clearml
+          repository: gianlucapargaetzi/cairnml
           ref: main
-          token: ${{ secrets.CLEARML_SDK_TOKEN }}
           path: sdk
       - uses: actions/setup-python@v5
         with:
