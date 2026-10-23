@@ -10,8 +10,8 @@ import re
 
 import pytest
 
-from clearml.datasets import SampleWriter
-from clearml.datasets.external import Pin, load_adapter, read_pin
+from cairnml.datasets import SampleWriter
+from cairnml.datasets.external import Pin, load_adapter, read_pin
 
 ROOT = Path(__file__).resolve().parent.parent
 PINS = sorted(p.stem for p in (ROOT / "datasets").glob("*.yaml"))
