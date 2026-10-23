@@ -1,0 +1,4 @@
+# A pin file. source: huggingface | git | local
+source: local
+link: tests/data/example_json_boxes
+adapter: example_json_boxes
